@@ -13,8 +13,8 @@ https://timetableplus.xjtlu.edu.cn/#/selection
 
 ## 全自动
 
-1. 同样先选好课。点确认 / SUBMIT 把请求打出来。没到点后端会校验时间并失败，这是正常的。
-2. 打开 Network，点红色的 `Payload?essAct=false&peAct=false`，在 **Payload** 里复制 **Request Payload**（请求体）。长这样：
+1. 先打开开发者工具并切到 Network 选好课，点确认 / SUBMIT 把请求打出来。没到点后端会校验时间并失败，这是正常的。
+2. 在 Network 里点红色的 `Payload?essAct=false&peAct=false`，复制 **Request Payload**（请求体）。长这样：
 
    ![从 Network Payload 复制请求体](docs/enroll-payload.png)
 
@@ -36,3 +36,5 @@ python ttEnroll.py
 ```bash
 docker compose up --build
 ```
+
+最后成功测试：2026-09-01（登录、换 token、按当前签名发出请求）。选课页和接口会变，不要默认还能用旧逻辑。2026-03-03 那版签名是 `md5(raw)`，2026-09-01 已变成 `md5(raw + raw)`。
