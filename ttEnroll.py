@@ -28,29 +28,36 @@ IDENTITY = os.environ.get("TT_IDENTITY")
 # 抢课请求 URL（与 TimetablePlus 当前选课页一致：普通课 peAct=false）
 ENROLL_URL = f"https://timetableplus.xjtlu.edu.cn/actapi/api/enrollment/{IDENTITY}/Enroll/Payload?essAct=false&peAct=false"
 
-# 要抢的课程数据
-MODULE_IDS_ENV = os.environ.get("TT_MODULE_IDS")
-ACTIVITY_IDS_ENV = os.environ.get("TT_ACTIVITY_IDS")
+def parse_enroll_payload(raw: str) -> tuple[list, list]:
+    """从选课 POST 请求体里取出 moduleIds / activityIds。timestamp 和 token 会在开抢时重算。"""
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as e:
+        print(f"错误: TT_PAYLOAD 不是合法 JSON：{e}")
+        sys.exit(1)
 
-if not MODULE_IDS_ENV:
-    print("错误: 必须在环境变量或 .env 中配置 TT_MODULE_IDS。")
+    if not isinstance(data, dict):
+        print("错误: TT_PAYLOAD 必须是对象，例如 {\"moduleIds\":[...],\"activityIds\":[...]}。")
+        sys.exit(1)
+
+    module_ids = data.get("moduleIds")
+    activity_ids = data.get("activityIds")
+    if not isinstance(module_ids, list) or not module_ids:
+        print("错误: TT_PAYLOAD 缺少 moduleIds 数组。")
+        sys.exit(1)
+    if not isinstance(activity_ids, list) or not activity_ids:
+        print("错误: TT_PAYLOAD 缺少 activityIds 数组。")
+        sys.exit(1)
+    return module_ids, activity_ids
+
+PAYLOAD_ENV = os.environ.get("TT_PAYLOAD")
+if not PAYLOAD_ENV:
+    print("错误: 必须在环境变量或 .env 中配置 TT_PAYLOAD（直接粘贴 Enroll/Payload 的请求体）。")
     sys.exit(1)
 
-try:
-    MODULE_IDS = json.loads(MODULE_IDS_ENV)
-except json.JSONDecodeError:
-    print("错误: TT_MODULE_IDS 环境变量格式错误，请使用 JSON 数组格式。")
-    sys.exit(1)
-
-if not ACTIVITY_IDS_ENV:
-    print("错误: 必须在环境变量或 .env 中配置 TT_ACTIVITY_IDS。")
-    sys.exit(1)
-
-try:
-    ACTIVITY_IDS = json.loads(ACTIVITY_IDS_ENV)
-except json.JSONDecodeError:
-    print("错误: TT_ACTIVITY_IDS 环境变量格式错误，请使用 JSON 数组格式。")
-    sys.exit(1)
+MODULE_IDS, ACTIVITY_IDS = parse_enroll_payload(PAYLOAD_ENV)
+print(f"已解析 TT_PAYLOAD: {len(MODULE_IDS)} 个模块 {MODULE_IDS}")
+print(f"已解析 TT_PAYLOAD: {len(ACTIVITY_IDS)} 个 activity")
 
 def generate_signature(identity, activity_ids, timestamp_ms, module_ids):
     """

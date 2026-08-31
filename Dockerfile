@@ -3,8 +3,8 @@ FROM python:3.11-slim
 # 设置工作目录
 WORKDIR /app
 
-# 安装必要的依赖
-RUN pip install --no-cache-dir requests pyotp cryptography urllib3 loguru
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # 复制脚本和配置文件
 COPY uimLogin.py .
