@@ -1,0 +1,15 @@
+services:
+  xjtlu-enroll:
+    build: .
+    container_name: xjtlu-enroll
+    environment:
+      - PYTHONUNBUFFERED=1
+      - XJTLU_USERNAME=${XJTLU_USERNAME}
+      - XJTLU_PASSWORD=${XJTLU_PASSWORD}
+      - XJTLU_OTP_URL=${XJTLU_OTP_URL}
+      - TT_TARGET_TIME=${TT_TARGET_TIME}
+      - TT_IDENTITY=${TT_IDENTITY}
+      - TT_MODULE_IDS=${TT_MODULE_IDS}
+      - TT_ACTIVITY_IDS=${TT_ACTIVITY_IDS}
+    env_file:
+      - .env

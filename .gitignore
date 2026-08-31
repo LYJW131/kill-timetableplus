@@ -1,0 +1,19 @@
+# Secrets and local credentials
+.env
+.env.*
+!.env.example
+
+# Session / cookie caches
+uim_cookies.json
+**/uim_cookies.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
