@@ -9,6 +9,8 @@ services:
       - XJTLU_OTP_URL=${XJTLU_OTP_URL}
       - TT_TARGET_TIME=${TT_TARGET_TIME}
       - TT_IDENTITY=${TT_IDENTITY}
+      - TT_ESS_ACT=${TT_ESS_ACT:-false}
+      - TT_PE_ACT=${TT_PE_ACT:-false}
       - TT_PAYLOAD=${TT_PAYLOAD}
     env_file:
       - .env
