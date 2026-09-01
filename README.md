@@ -23,7 +23,7 @@ https://timetableplus.xjtlu.edu.cn/#/selection
 ```
 
 3. 复制 `.env.example` 为 `.env`，填 UIM 账号，并把上一步整段 JSON 贴到 `TT_PAYLOAD=` 后面。`timestamp` / `token` 不用改，脚本开抢时会按真实时间重签。`XJTLU_OTP_URL` 填 `otpauth://totp/...` 设置链接，不是登录时那 6 位数字；账号必须先在 UIM 开过 OTP。新绑定直接扫二维码就能拿到链接；已经绑过则到密码管理器里导出该条目的设置 URL。
-4. `TT_TARGET_TIME` 写成正式开抢时间，格式 `YYYY-MM-DD HH:MM:SS`（和 `console.js` 里那一处一致）。
+4. `TT_TARGET_TIME` 写成正式开抢时间，格式 `YYYY-MM-DD HH:MM:SS`（和 `console.js` 里那一处一致）。Network 里 URL 后面两个查询参数 `essAct` / `peAct` 分别对应 `TT_ESS_ACT` / `TT_PE_ACT`，默认都是 `false`（普通课）；和页面不一致时按 Network 改。
 5. 启动（二选一即可）。脚本会按 `TT_TARGET_TIME` 定时：先等到开抢前 5 分钟登录，再等到准点后 100ms 发请求。电脑别休眠、终端别关。
 
 ```bash

@@ -25,8 +25,20 @@ if os.path.exists(env_path):
 TARGET_TIME_STR = os.environ.get("TT_TARGET_TIME")
 IDENTITY = os.environ.get("TT_IDENTITY")
 
-# 抢课请求 URL（与 TimetablePlus 当前选课页一致：普通课 peAct=false）
-ENROLL_URL = f"https://timetableplus.xjtlu.edu.cn/actapi/api/enrollment/{IDENTITY}/Enroll/Payload?essAct=false&peAct=false"
+def env_query_flag(name: str, default: str = "false") -> str:
+    """读取 true/false 查询参数；未设置或为空时用默认值。"""
+    raw = os.environ.get(name, default)
+    if raw is None or not str(raw).strip():
+        raw = default
+    return str(raw).strip().lower()
+
+# 抢课请求 URL 查询参数（与 TimetablePlus Network 里一致，可用环境变量覆盖）
+ESS_ACT = env_query_flag("TT_ESS_ACT", "false")
+PE_ACT = env_query_flag("TT_PE_ACT", "false")
+ENROLL_URL = (
+    f"https://timetableplus.xjtlu.edu.cn/actapi/api/enrollment/{IDENTITY}/Enroll/Payload"
+    f"?essAct={ESS_ACT}&peAct={PE_ACT}"
+)
 
 def parse_enroll_payload(raw: str) -> tuple[list, list]:
     """从选课 POST 请求体里取出 moduleIds / activityIds。timestamp 和 token 会在开抢时重算。"""
@@ -58,6 +70,7 @@ if not PAYLOAD_ENV:
 MODULE_IDS, ACTIVITY_IDS = parse_enroll_payload(PAYLOAD_ENV)
 print(f"已解析 TT_PAYLOAD: {len(MODULE_IDS)} 个模块 {MODULE_IDS}")
 print(f"已解析 TT_PAYLOAD: {len(ACTIVITY_IDS)} 个 activity")
+print(f"抢课 URL 查询参数: essAct={ESS_ACT}&peAct={PE_ACT}")
 
 def generate_signature(identity, activity_ids, timestamp_ms, module_ids):
     """
